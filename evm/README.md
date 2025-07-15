@@ -28,11 +28,22 @@ npx hardhat ignition deploy ./ignition/modules/BridgeProxy.ts --network ethereum
 ## Setup deployed proxy contract
 Set fee basis points:
 ```shell
-npx hardhat setup-proxy --network sepolia --fee-bp 10 
+npx hardhat setupProxy --network sepolia --fee-bp 10 
 ```
 Setup tokens:
 ```shell
-npx hardhat setup-proxy --network sepolia --token 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238,0x4f9855416f0062688357Bf3b3Bf3E4dC88078fCa
+npx hardhat setupProxy --network sepolia --token 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238,0x4f9855416f0062688357Bf3b3Bf3E4dC88078fCa
+```
+
+## Send transactions
+Swap tokens on sepolia:
+```shell
+npx hardhat run scripts/swap.ts --network sepolia
+```
+
+Bridge tokens across different blockchains:
+```shell
+npx hardhat run scripts/swap-and-bridge.ts --network sepolia
 ```
 
 ## Withdraw

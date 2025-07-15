@@ -7,17 +7,19 @@
     "build": "hardhat compile",
     "test": "hardhat test",
     "test-with-gas-usage": "REPORT_GAS=true hardhat test",
-    "format": "npx prettier 'contracts/**/*.sol' 'hardhat.config.ts' 'test/**/*.ts' --write",
-    "format:check": "npx prettier 'contracts/**/*.sol' 'hardhat.config.ts' 'test/**/*.ts' --check",
+    "format": "npx prettier 'contracts/**/*.sol' 'hardhat.config.ts' 'test/**/*.ts' 'scripts/**/*.ts' 'tasks/**/*.ts' --write",
+    "format:check": "npx prettier 'contracts/**/*.sol' 'hardhat.config.ts' 'test/**/*.ts' 'scripts/**/*.ts' 'tasks/**/*.ts' --check",
     "lint": "solhint --fix 'contracts/**/*.sol'",
     "lint:check": "solhint 'contracts/**/*.sol'"
   },
   "license": "MIT",
   "dependencies": {
+    "@allbridge/bridge-core-sdk": "^3.23.0",
     "@openzeppelin/contracts": "^5.3.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "@types/big.js": "^6.2.2",
     "dotenv": "^17.0.1",
     "hardhat": "^2.25.0",
     "hardhat-ignore-warnings": "^0.2.12",

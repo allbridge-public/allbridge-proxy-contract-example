@@ -4,7 +4,6 @@ import 'hardhat-ignore-warnings';
 
 import * as dotenv from 'dotenv';
 
-const network = getNetwork();
 dotenv.config({ path: '.env', quiet: true });
 import './tasks';
 
@@ -33,9 +32,10 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic: 'test test test test test test test test test test test junk',
       },
+
     },
-    sepolia: getNetworkConfig(network),
-    ethereum: getNetworkConfig(network),
+    sepolia: getNetworkConfig('sepolia'),
+    ethereum: getNetworkConfig('ethereum'),
   },
   gasReporter: {
     enabled: !!process.env.REPORT_GAS && process.env.REPORT_GAS !== 'false',
@@ -53,12 +53,3 @@ const config: HardhatUserConfig = {
 };
 
 export default config;
-
-function getNetwork(): string {
-  const keyIndex = process.argv.indexOf('--network');
-  if (keyIndex >= 0) {
-    return process.argv[keyIndex + 1];
-  } else {
-    return 'hardhat';
-  }
-}
