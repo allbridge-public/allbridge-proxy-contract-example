@@ -1,4 +1,4 @@
-# EVM Allbridge Bridge Proxy contract
+# EVM proxy for Allbridge Core bridge
 
 ## Deployment on localhost (development)
 Run local node:

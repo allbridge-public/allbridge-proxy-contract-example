@@ -1,4 +1,4 @@
-# Soroban Allbridge Bridge Proxy contract
+# Stellar proxy for Allbridge Core bridge
 
 ## Prerequisites
  * Rust and Cargo installed
