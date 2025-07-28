@@ -3,7 +3,7 @@
 This project contains reference implementation of smart contracts that act as a proxy for Allbridge Core bridge smart contracts across multiple blockchains.
 
 ### Key features
-* Supports swaps and bridge of stable tokens by forwarding requests to Allbridge Core bridge contract wich handles the operation.
+* Supports swaps and bridge of stable tokens by forwarding requests to Allbridge Core bridge contract which handles the operation.
 * These contracts share the same interface as Allbridge Core bridge contracts, which means they can be used with existing tools designed for Allbridge Core like Allbridge Core SDK.
 * Can retain a portion of transferred amount as protocol fee.
 
