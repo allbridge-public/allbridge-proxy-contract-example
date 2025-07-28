@@ -1,6 +1,6 @@
 # EVM Allbridge Bridge Proxy contract
 
-## Running on localhost (development)
+## Deployment on localhost (development)
 Run local node:
 ```shell
 npx hardhat node
@@ -11,14 +11,14 @@ Deploy on local node:
 npx hardhat run scripts/deploy-test-bridge-proxy.ts --network local
 ```
 
-## Running on testnet
+## Deployment on testnet
 
 Deploy on sepolia testnet:
 ```shell
 npx hardhat ignition deploy ./ignition/modules/BridgeProxy.ts --network sepolia --parameters ignition/parameters/sepolia.json
 ```
 
-## Running on mainnet
+## Deployment on mainnet
 
 Deploy on ethereum mainnet:
 ```shell
@@ -41,7 +41,7 @@ Swap tokens on sepolia:
 npx hardhat run scripts/swap.ts --network sepolia
 ```
 
-Bridge tokens across different blockchains:
+Swap tokens and bridge to another chain:
 ```shell
 npx hardhat run scripts/swap-and-bridge.ts --network sepolia
 ```

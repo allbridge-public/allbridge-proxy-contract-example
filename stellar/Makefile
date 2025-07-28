@@ -1,27 +1,50 @@
 default: build
 
-ADDRESS_PATH=stellar-deploy
-NETWORK=testnet
-IDENTITY=alice
-ADMIN_IDENTITY=alice
-BRIDGE_ADDRESS=CAMP6GLJPTVISUDFVNK3MOLBMGWUCD25ISBJBDR7H6MD4FWYA27XVX7D
-TOKEN_ADDRESS=CACOK7HB7D7SRPMH3LYYOW77T6D4D2F7TR7UEVKY2TVSUDSRDM6DZVLK
-TOKEN_HEX_ADDRESS=04e57ce1f8ff28bd87daf1875bff9f87c1e8bf9c7f425558d4eb2a0e511b3c3c
-POOL_ADDRESS=CA6NB5XR5NTJB6X7VCK65NMSTIAEQACQHYSQP5JZUVWXUP4D4UUZKNHJ
-FEE_BP=10
+NETWORK ?= testnet
+IDENTITY ?= alice
+ADMIN_IDENTITY ?= alice
+# Path where to store deployed contract addresses
+ADDRESS_PATH ?= stellar-deploy
+BRIDGE_ADDRESS ?= CAMP6GLJPTVISUDFVNK3MOLBMGWUCD25ISBJBDR7H6MD4FWYA27XVX7D
+TOKEN_ADDRESS ?= CACOK7HB7D7SRPMH3LYYOW77T6D4D2F7TR7UEVKY2TVSUDSRDM6DZVLK
+TOKEN_HEX_ADDRESS ?= 04e57ce1f8ff28bd87daf1875bff9f87c1e8bf9c7f425558d4eb2a0e511b3c3c
+FEE_BP ?= 10
+AMOUNT ?= 10000000
+SWAP_RECIPIENT ?= GA7BQD4JKXZML7FVKJ25MDVEQPV56VDBMCBXDMEZQ6FMPBEMV6Q6MKTC
+SWAP_RECEIVE_TOKEN ?= 1cfbfc7546de559c9ff6ff89169e9acdecebf9ebb6cef3e0683178381816315f
+BRIDGE_RECEIVE_ADDRESS ?= 0000000000000000000000000F916877fa119b8e3F22BABd62fCb47135b62C23
+BRIDGE_RECEIVE_TOKEN ?= 0000000000000000000000001c7D4B196Cb0C7B01d743Fbc6116a902379C7238
+BRIDGE_RECEIVE_CHAIN_ID ?= 2
+
 
 ADMIN_ADDRESS=$$(stellar keys address $(ADMIN_IDENTITY))
 SENDER_ADDRESS=$$(stellar keys address $(IDENTITY))
-I128_MAX=170141183460469231731687303715884105727
-EXPIRATION_LEDGER=3110400
 
 BRIDGE_PROXY_WASM_PATH = target/wasm32-unknown-unknown/release/bridge_proxy.wasm
 BRIDGE_PROXY_WASM_PATH_OP = target/wasm32-unknown-unknown/release/bridge_proxy.optimized.wasm
 BRIDGE_PROXY_ADDRESS_PATH = $(ADDRESS_PATH)/bridge_proxy
 BRIDGE_PROXY_ADDRESS = $$(cat $(BRIDGE_PROXY_ADDRESS_PATH))
 
+run:
+	echo "Running on network: $(NETWORK)"
+
+# Tools
+
 install-cli:
 	cargo install --locked --version 23.0.0 stellar-cli
+
+# Account
+
+generate-account-testnet:
+	stellar keys generate --fund --network testnet $(IDENTITY)
+
+generate-account:
+	stellar keys generate $(IDENTITY)
+
+output-address:
+	echo $(SENDER_ADDRESS)
+
+# Contract
 
 build:
 	cargo build --target wasm32-unknown-unknown --release --package bridge-proxy
@@ -33,17 +56,11 @@ test: build
 optimize:
 	stellar contract optimize --wasm $(BRIDGE_PROXY_WASM_PATH)
 
-generate-account:
-	stellar keys generate --network $(NETWORK) --fund $(IDENTITY)
-
-output-address:
-	echo $(SENDER_ADDRESS)
-
 proxy-deploy:
 	stellar contract deploy \
       --wasm $(BRIDGE_PROXY_WASM_PATH_OP) \
       --source $(ADMIN_IDENTITY) \
-      --network $(NETWORK) 	\
+      --network $(NETWORK) \
       > $(BRIDGE_PROXY_ADDRESS_PATH) && echo $(BRIDGE_PROXY_ADDRESS)
 
 proxy-initialize:
@@ -61,7 +78,7 @@ proxy-set-fee-bp:
 	stellar contract invoke \
         --id $(BRIDGE_PROXY_ADDRESS) \
         --source $(ADMIN_IDENTITY) \
-        --network $(NETWORK) 	\
+        --network $(NETWORK) \
         -- \
         set_fee_bp \
         --fee_bp $(FEE_BP) \
@@ -75,9 +92,9 @@ proxy-swap:
         swap \
         --sender $(SENDER_ADDRESS) \
         --token $(TOKEN_HEX_ADDRESS) \
-        --amount 10000000 \
-        --recipient GA7BQD4JKXZML7FVKJ25MDVEQPV56VDBMCBXDMEZQ6FMPBEMV6Q6MKTC \
-        --receive_token 1cfbfc7546de559c9ff6ff89169e9acdecebf9ebb6cef3e0683178381816315f \
+        --amount $(AMOUNT) \
+        --recipient $(SWAP_RECIPIENT) \
+        --receive_token $(SWAP_RECEIVE_TOKEN) \
         --receive_amount_min 0 \
 
 proxy-swap-and-bridge:
@@ -89,10 +106,10 @@ proxy-swap-and-bridge:
         swap_and_bridge \
         --sender $(SENDER_ADDRESS) \
         --token $(TOKEN_ADDRESS) \
-        --amount 10000000 \
-        --recipient 0000000000000000000000000F916877fa119b8e3F22BABd62fCb47135b62C23 \
-        --destination_chain_id 2 \
-        --receive_token 0000000000000000000000001c7D4B196Cb0C7B01d743Fbc6116a902379C7238 \
+        --amount $(AMOUNT) \
+        --recipient $(BRIDGE_RECEIVE_ADDRESS) \
+        --destination_chain_id $(BRIDGE_RECEIVE_CHAIN_ID) \
+        --receive_token $(BRIDGE_RECEIVE_TOKEN) \
         --nonce 0000000000000000000000000000000000000000000000000000000000000019 \
         --gas_amount 20000000 \
         --fee_token_amount 0 \
@@ -101,7 +118,7 @@ token-get-proxy-balance:
 	stellar contract invoke \
         --id $(TOKEN_ADDRESS) \
         --source $(ADMIN_IDENTITY) \
-        --network $(NETWORK) 	\
+        --network $(NETWORK) \
         --is-view \
         -- \
         balance \
@@ -111,7 +128,7 @@ proxy-withdraw-fee:
 	stellar contract invoke \
         --id $(BRIDGE_PROXY_ADDRESS) \
         --source $(ADMIN_IDENTITY) \
-        --network $(NETWORK) 	\
+        --network $(NETWORK) \
         -- \
         withdraw_collected_tokens \
         --sender $(ADMIN_ADDRESS) \

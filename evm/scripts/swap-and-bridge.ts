@@ -45,9 +45,10 @@ async function main() {
   const amount = convertFloatAmountToInt(amountFloat, sourceToken.decimals);
   const amountAfterProxyFee = BigInt(amount) * (10000n - proxyFeeBp) / 10000n;
   const amountAfterProxyFeeFloat = convertIntAmountToFloat(amountAfterProxyFee.toString(), sourceToken.decimals);
+  // Use amount after deducting proxy fee to calculate the amount to be received
+  const toBeReceivedFloat = await sdk.getAmountToBeReceived(amountAfterProxyFeeFloat, sourceToken, destinationToken);
 
   // prepare swap and bridge tx
-  const toBeReceivedFloat = await sdk.getAmountToBeReceived(amountAfterProxyFeeFloat, sourceToken, destinationToken);
   const transferParams: SendParams = {
     amount: amountFloat,
     fromAccountAddress: fromAddress,

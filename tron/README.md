@@ -1,6 +1,6 @@
 # EVM Allbridge Bridge Proxy contract
 
-## Running on localhost (development)
+## Deployment on localhost (development)
 Run local node:
 ```shell
 docker run -p 9090:9090 --rm --name tron -e "seed=4f60c4cd318a" tronbox/tre
@@ -11,14 +11,14 @@ Deploy contracts on local node:
 tronbox migrate --f 1 --to 3
 ```
 
-## Running on testnet
+## Deployment on testnet
 
 Deploy contracts on nile testnet:
 ```shell
 tronbox migrate --f 3 --to 3 --network nile
 ```
 
-## Running on mainnet
+## Deployment on mainnet
 
 Deploy contracts on tron mainnet:
 ```shell
