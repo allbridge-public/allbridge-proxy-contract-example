@@ -5,9 +5,8 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 const BridgeProxyModule = buildModule("BridgeProxyModule", (m) => {
   const bridgeAddress = m.getParameter("bridge");
-  const partnerId = m.getParameter("partnerId");
 
-  const bridgeProxy = m.contract("BridgeProxy", [bridgeAddress, partnerId]);
+  const bridgeProxy = m.contract("BridgeProxy", [bridgeAddress]);
 
   return { bridgeProxy };
 });

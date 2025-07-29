@@ -11,8 +11,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title Bridge Proxy
- * @notice Enables partner integration by forwarding calls to Allbridge Core bridge, while charging fees, and can mark
- *         the transaction with unique partner ID.
+ * @notice Enables partner integration by forwarding calls to Allbridge Core bridge, while charging fees.
  */
 contract BridgeProxy is Ownable {
     using SafeERC20 for ERC20;
@@ -27,13 +26,9 @@ contract BridgeProxy is Ownable {
      */
     uint public feeBP;
     uint private constant BP = 10000;
-    uint private immutable PARTNER_ID;
 
-    event TransferStarted(uint partnerId);
-
-    constructor(address _bridge, uint _partnerId) payable Ownable(msg.sender) {
+    constructor(address _bridge) payable Ownable(msg.sender) {
         bridge = IBridge(_bridge);
-        PARTNER_ID = _partnerId;
     }
 
     /**
@@ -55,7 +50,6 @@ contract BridgeProxy is Ownable {
         token.safeTransferFrom(msg.sender, address(this), _amount);
         uint amountAfterFee = _amount - (_amount * feeBP / BP);
         bridge.swap(amountAfterFee, _token, _receiveToken, _recipient, _receiveAmountMin);
-        emit TransferStarted(PARTNER_ID);
     }
 
     /**
@@ -104,7 +98,6 @@ contract BridgeProxy is Ownable {
             _messenger,
             _feeTokenAmount
         );
-        emit TransferStarted(PARTNER_ID);
     }
 
     /**

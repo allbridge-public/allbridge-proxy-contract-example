@@ -6,8 +6,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 describe('BridgeProxy', function () {
-  const partnerId = 1000;
-
   async function deployContractsFixture() {
     const [owner, otherAccount] = await ethers.getSigners();
 
@@ -20,7 +18,7 @@ describe('BridgeProxy', function () {
     const testBridge = await TestBridge.deploy();
 
     const BridgeProxy = await ethers.getContractFactory('BridgeProxy');
-    const proxy = await BridgeProxy.deploy(testBridge.target, partnerId);
+    const proxy = await BridgeProxy.deploy(testBridge.target);
 
     await token.approve(proxy, ethers.MaxUint256);
 
@@ -67,19 +65,6 @@ describe('BridgeProxy', function () {
       const tx = await proxy.swap(amount, tokenAddressBytes, receiveToken, recipient, amount);
       await expect(tx).to.emit(testBridge, 'SwapEvent').withArgs(
         expectedAmount, tokenAddressBytes, receiveToken, recipient, amount
-      );
-    });
-
-    it('Should mark tx with partner ID', async function () {
-      const { proxy, testBridge, token, tokenDecimals } = await loadFixture(
-        deployContractsFixture,
-      );
-      await proxy.setupToken(token);
-      const amount = ethers.parseUnits('1', tokenDecimals);
-      const tokenAddressBytes = ethers.zeroPadValue(await token.getAddress(), 32);
-      const tx = await proxy.swap(amount, tokenAddressBytes, receiveToken, recipient, amount);
-      await expect(tx).to.emit(proxy, 'TransferStarted').withArgs(
-        partnerId
       );
     });
   });
@@ -139,21 +124,6 @@ describe('BridgeProxy', function () {
       const tx = await proxy.swapAndBridge(tokenAddressBytes, totalAmount, recipient, destinationChainId, receiveToken, nonce, messengerProtocol, feeTokenAmount, { value: value });
       await expect(tx).to.emit(testBridge, 'SwapAndBridgeEvent').withArgs(
         tokenAddressBytes, expectedAmount, recipient, destinationChainId, receiveToken, nonce, messengerProtocol, feeTokenAmount, value
-      );
-    });
-
-    it('Should mark tx with partner ID', async function () {
-      const { proxy, testBridge, token, tokenDecimals } = await loadFixture(
-        deployContractsFixture,
-      );
-      await proxy.setupToken(token);
-
-      const amount = ethers.parseUnits('1', tokenDecimals);
-      const feeTokenAmount = ethers.parseUnits('0.05', tokenDecimals);
-      const tokenAddressBytes = ethers.zeroPadValue(await token.getAddress(), 32);
-      const tx = await proxy.swapAndBridge(tokenAddressBytes, amount, recipient, destinationChainId, receiveToken, nonce, messengerProtocol, feeTokenAmount, { value: value });
-      await expect(tx).to.emit(proxy, 'TransferStarted').withArgs(
-        partnerId
       );
     });
   });

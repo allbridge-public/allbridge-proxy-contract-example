@@ -8,7 +8,7 @@ async function main() {
   const bridgeAddress = await bridge.getAddress();
 
   console.log("Deploy test bridge proxy...");
-  const parameters = { BridgeProxyModule: { bridge: bridgeAddress, partnerId: 1000 } };
+  const parameters = { BridgeProxyModule: { bridge: bridgeAddress } };
   const { bridgeProxy } = await hre.ignition.deploy(BridgeProxyModule, { parameters });
   const tokenAddress = await token.getAddress();
   const bridgeProxyAddress = await bridgeProxy.getAddress();
